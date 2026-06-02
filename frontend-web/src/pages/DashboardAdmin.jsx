@@ -18,7 +18,7 @@ const fetchRequests = async () => {
     setError(null);
     const response = await axios.get(`${API_URL}/my-requests/`);
     
-      // SÉCURITÉ : On vérifie si la réponse est bien un tableau. 
+      // SÉCURITÉ : On vérifie si la réponse est bien un tableau.
       // Si Django renvoie une pagination (ex: response.data.results), on prend les results.
     if (Array.isArray(response.data)) {
         setRequests(response.data);

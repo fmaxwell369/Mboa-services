@@ -1,10 +1,10 @@
-version: '3.8'
+
 
 services:
   # Base de données PostgreSQL
   db:
     image: postgres:15-alpine
-    container_name: mboa_postgres
+    container_name: camerservices_postgres
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -19,18 +19,18 @@ services:
   # Cache et Broker de messages Redis
   redis:
     image: redis:7-alpine
-    container_name: mboa_redis
+    container_name: camerservices_redis
     ports:
       - "6379:6379"
     networks:
-      - mboa_network
+      - camerservices_network
 
   # Notre API Backend Django (Sera construit dans la phase suivante)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: mboa_backend
+    container_name: camerservices_backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend:/app
@@ -50,11 +50,11 @@ services:
       - db
       - redis
     networks:
-      - mboa_network
+      - camerservices_network
 
 volumes:
   postgres_data:
 
 networks:
-  mboa_network:
+  camerservices_network:
     driver: bridge
