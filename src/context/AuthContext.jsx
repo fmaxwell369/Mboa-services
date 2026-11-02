@@ -5,9 +5,17 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
+  try {
     const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
-  });
+    return stored && stored !== 'undefined'
+      ? JSON.parse(stored)
+      : null;
+  } catch {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    return null;
+  }
+});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,21 +38,29 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = async (credentials) => {
-    const data = await authApi.login(credentials);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    setUser(data.user);
-    return data.user;
-  };
+const login = async (credentials) => {
+  const data = await authApi.login(credentials);
+  const authenticatedUser = data.user ?? data;
 
-  const register = async (payload) => {
-    const data = await authApi.register(payload);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    setUser(data.user);
-    return data.user;
-  };
+  localStorage.setItem('token', data.token);
+  localStorage.setItem('user', JSON.stringify(authenticatedUser));
+
+  setUser(authenticatedUser);
+
+  return authenticatedUser;
+};
+
+const register = async (payload) => {
+  const data = await authApi.register(payload);
+  const authenticatedUser = data.user ?? data;
+
+  localStorage.setItem('token', data.token);
+  localStorage.setItem('user', JSON.stringify(authenticatedUser));
+
+  setUser(authenticatedUser);
+
+  return authenticatedUser;
+};
 
   const logout = () => {
     localStorage.removeItem('token');
