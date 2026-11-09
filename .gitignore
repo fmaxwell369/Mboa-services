@@ -6,8 +6,6 @@ dist/
 build/
 
 # Environment variables
-.env
-.env.*
 
 # Logs
 *.log
@@ -18,3 +16,4 @@ npm-debug.log*
 
 # Backups
 *.backup
+config.bat
